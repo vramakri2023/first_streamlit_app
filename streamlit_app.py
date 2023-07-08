@@ -38,10 +38,6 @@ def get_fruitvice_data(this_fruit_choice):
             return fruityvice_normalized
 
 
-
-
-
-
 try:
     fruit_choice = streamlit.text_input('What fruit would you like information about?')
     if not fruit_choice:
@@ -68,21 +64,32 @@ streamlit.write('The user entered ', fruit_choice)
 
 
 # Don't run anything past here while we trouble shoot
-streamlit.stop()
+# streamlit.stop()
 
+# Snowflake related functions
+def get_fruit_load_list():
+      with my_cnx.cursor() as my_cur:
+            my_cur.execute("select * from fruit_load_list")
+            return my_cur.fetchall()
 
-my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
-my_cur = my_cnx.cursor()
-# my_cur.execute("SELECT CURRENT_USER(), CURRENT_ACCOUNT(), CURRENT_REGION()")
-my_cur.execute("select * from fruit_load_list")
-my_data_row = my_cur.fetchone()
-my_data_row=my_cur.fetchall()
-# streamlit.text("Hello from Snowflake:")
-streamlit.header("The Fruit load list contains")
-# streamlit.text("The fruit load list contains:")
-streamlit.dataframe(my_data_row)
+# add a button to load the fruit.
+if streamlit.button('Get Fruit Load List'):
+      my_cnx=snowflake.connector.connect(**streamlit.secrets["snowflake"])
+      my_data_rows= get_fruit_load_list()
+      streamlit.dataframe(my_data_rows)
 
-# allow end user to add a fruit to the list
-add_my_fruit=streamlit.text_input('What fruit would you like to add','')
-streamlit.write('Thanks for adding: ', add_my_fruit)
-my_cur.execute("insert into fruit_load_list values ('from streamlit')")
+# my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
+# my_cur = my_cnx.cursor()
+# # my_cur.execute("SELECT CURRENT_USER(), CURRENT_ACCOUNT(), CURRENT_REGION()")
+# my_cur.execute("select * from fruit_load_list")
+# my_data_row = my_cur.fetchone()
+# my_data_row=my_cur.fetchall()
+# # streamlit.text("Hello from Snowflake:")
+# streamlit.header("The Fruit load list contains")
+# # streamlit.text("The fruit load list contains:")
+# streamlit.dataframe(my_data_row)
+
+# # allow end user to add a fruit to the list
+# add_my_fruit=streamlit.text_input('What fruit would you like to add','')
+# streamlit.write('Thanks for adding: ', add_my_fruit)
+# my_cur.execute("insert into fruit_load_list values ('from streamlit')")
